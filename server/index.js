@@ -2,6 +2,8 @@ const { secp256k1 } = require("ethereum-cryptography/secp256k1")
 const { utf8ToBytes, toHex, hexToBytes } = require("ethereum-cryptography/utils")
 const { sha256 } = require("ethereum-cryptography/sha256")
 
+const fs = require('fs');
+const https = require('https');
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -9,6 +11,18 @@ const port = 3042;
 
 app.use(cors());
 app.use(express.json());
+
+// Paths to your certificate files
+const privateKeyPath = '/etc/letsencrypt/live/tools.utopiaai.world/privkey.pem';
+const certificatePath = '/etc/letsencrypt/live/tools.utopiaai.world/fullchain.pem';
+
+// Read the SSL certificate files
+const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+const certificate = fs.readFileSync(certificatePath, 'utf8');
+
+const credentials = { key: privateKey, cert: certificate };
+
+
 
 const message = "I ate your cake sorry"
 const messageBytes = utf8ToBytes(message)
@@ -77,8 +91,10 @@ app.post("/send", (req, res) => {
   
 });
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}!`);
+const httpsServer = https.createServer(credentials, app);
+
+httpsServer.listen(port, () => {
+  console.log(`Listening on port ${port} (HTTPS)`);
 });
 
 function setInitialBalance(address) {
