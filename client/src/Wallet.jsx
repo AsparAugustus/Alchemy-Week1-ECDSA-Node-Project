@@ -45,7 +45,10 @@ function Wallet({ privateKey, setPrivateKey,
   return (
     <div className="container wallet">
       <h1>Your Wallet</h1>
-
+    <h4>
+    Example private key : 0342e5b4d9a0f711b77f72b505537ef7f6dfc5614431d51e8d2b515a2f9b9f9c
+    </h4>
+      
       <label>
         Private Key
         <input placeholder="Type in private key here" value={privateKey} onChange={onChange}></input>
